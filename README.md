@@ -3,7 +3,12 @@ No documentation shall be made until the first stable release appears.
 The first stable release must have these features:
 - A lexer that transpiles the B-like syntax into usable tokens.
 - A parser that transpiles the tokens into an IR.
-- The interpreter/compiler accurately running/compiling the IR.
+- The interpreter accurately running the IR.
+The second stable release must have these new features:
+- The lexer and parser combined into one file.
+- That one file to have a self-compilable copy.
+- A compiler for the IR for x86_64.
+The third stable release must combine everything into one file.
 ## Contributing
 ### Code structure
 #### Newlines
