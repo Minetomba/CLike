@@ -177,6 +177,7 @@ int exec(char code[]) {
 /* Main logic */
 int main(int argc, char* argv[]) {
 	if (argc != 2) {
+		printf("Usage: %s <code>\n", argv[0]);
 		return 1;
 	}
 	printf("global _start\n_start:\nmov r13, rsp\njmp main\n");

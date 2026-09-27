@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 	if (argc != 2) {
 		print("Usage: ");
 		print(argv[0]);
-		print(" <code>");
+		print(" <tokens>");
 		putchar('\n');
 		return 1;
 	}
