@@ -1,5 +1,8 @@
 ## About the project
 No documentation shall be made until the first stable release appears.
+The first stable release must have these features:
+- A lexer transpiled the B-like syntax into the provided IR.
+- The provided IR accurately running/compiling that B-like syntax.
 ## Contributing
 ### Code structure
 #### Newlines

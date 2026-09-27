@@ -37,11 +37,6 @@ int llen(char buf[]) {
 /* Very helpful helpers */
 int exec(char code[]) {
 	while (code[byte_pointer] != '\0') {
-		if (code[byte_pointer] == '%') {
-			byte_pointer++;
-			while (code[byte_pointer] != '%') byte_pointer++;
-			byte_pointer++;
-		}
 		if (code[byte_pointer] == '#') {
 			char label[256];
 			label[0] = '\0';
