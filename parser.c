@@ -1,6 +1,9 @@
+#include <string.h> /* for the strcpy() function */
 #include <unistd.h> /* for the syscall() function */
 
 #define MAX_STRING_LENGTH 4096 /* configurable number specifying the total maximum amount of allowed characters in a single string */
+#define MAX_VARIABLES 64
+#define MAX_FUNCTIONS 64
 
 int putchar(char character) { /* prints a character */
 	syscall(1, 1, &character, 1);
@@ -12,6 +15,27 @@ int print(char string[]) { /* prints a list of characters until the function hit
 	while (string[i] != '\0') {
 		putchar(string[i]);
 		i += 1;
+	}
+	return 0;
+}
+
+int printd(int input_number) {
+	char number[MAX_STRING_LENGTH];
+	if (input_number == 0) {
+		putchar('0');
+		return 0;
+	}
+	if (input_number < 0) {
+		putchar('-');
+		input_number = -input_number;
+	}
+	int i = 0;
+	while (input_number > 0) {
+		number[i++] = '0' + input_number % 10;
+		input_number /= 10;
+	}
+	while (i--) {
+		putchar(number[i]);
 	}
 	return 0;
 }
@@ -73,9 +97,73 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 	int byte_pointer = 0;
+	char variables[MAX_VARIABLES][MAX_STRING_LENGTH];
+	int variable_pointer = 0;
+	char functions[MAX_FUNCTIONS][MAX_STRING_LENGTH];
+	int function_pointer = 0;
 	while (argv[1][byte_pointer] != '\0') {
-		if (eqnext(argv[1], &byte_pointer, "") == 1) {
+		if (eqnext(argv[1], &byte_pointer, "DEFINE_VARIABLE ") == 1) {
+			strcpy(variables[variable_pointer], get_to_next_char(argv[1], &byte_pointer, '\n'));
+			variable_pointer += 1;
 			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "DEFINE_FUNCTION ") == 1) {
+			strcpy(functions[function_pointer], get_to_next_char(argv[1], &byte_pointer, '\n'));
+			function_pointer += 1;
+			continue;
+		}
+		byte_pointer += 1;
+	}
+	byte_pointer = 0;
+	int do_add_assign = 0;
+	while (argv[1][byte_pointer] != '\0') {
+		if (eqnext(argv[1], &byte_pointer, "DEFINE_FUNCTION ") == 1) {
+			putchar('#');
+			putchar('\n');
+			continue;
+		}
+		if (do_add_assign == 1 && eqnext(argv[1], &byte_pointer, "LINE_END")) {
+			do_add_assign = 0;
+			putchar('`');
+			putchar('\n');
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "IDENTIFIER ") == 1) {
+			int i = 0;
+			int stable_zero = 0;
+			char target[MAX_STRING_LENGTH];
+			strcpy(target, get_to_next_char(argv[1], &byte_pointer, '\n'));
+			while (eqnext(variables[i], &stable_zero, target) == 0 && variables[i][0] != 0) {
+				stable_zero = 0;
+				i++;
+			}
+			if (variables[i][0] == 0) {
+				int j = 0;
+				while (eqnext(functions[j], &stable_zero, target) == 0 && functions[j][0] != 0) {
+					stable_zero = 0;
+					j++;
+				}
+				printd(j);
+				print("| 1| &");
+				putchar('\n');
+			} else {
+				print("$ ");
+				printd(i * 8 + 2048);
+				print("| +\n");
+			}
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "NUMBER ") == 1) {
+			print(get_to_next_char(argv[1], &byte_pointer, '\n'));
+			print("|\n");
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "OPERATOR_DEREFERENCE") == 1) {
+			putchar('@');
+			putchar('\n');
+		}
+		if (eqnext(argv[1], &byte_pointer, "OPERATOR_ASSIGN") == 1) {
+			do_add_assign = 1;
 		}
 		byte_pointer += 1;
 	}

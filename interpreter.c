@@ -28,6 +28,9 @@ int main(int argc, char *argv[]) {
 		} else if (c == '!') { /* Store */
 			*(st*)stack[stack_pointer] = stack[stack_pointer + ~1 + 1];
 			stack_pointer += ~2 + 1;
+		} else if (c == '`') { /* Reverse Store */
+			*(st*)stack[stack_pointer + ~1 + 1] = stack[stack_pointer];
+			stack_pointer += ~2 + 1;
 		} else if (c == '+') { /* Add */
 			stack[stack_pointer + ~1 + 1] = stack[stack_pointer + ~1 + 1] + stack[stack_pointer];
 			stack_pointer += ~1 + 1;

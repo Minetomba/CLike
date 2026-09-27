@@ -238,6 +238,12 @@ int main(int argc, char* argv[]) {
 			putchar('\n');
 			continue;
 		}
+		if (argv[1][byte_pointer] == '*') {
+			byte_pointer += 1;
+			print("OPERATOR_DEREFERENCE");
+			putchar('\n');
+			continue;
+		}
 		if (argv[1][byte_pointer] == '=') {
 			byte_pointer += 1;
 			print("OPERATOR_ASSIGN");
@@ -288,6 +294,28 @@ int main(int argc, char* argv[]) {
 		}
 		if (eqnext(argv[1], &byte_pointer, "goto") == 1) {
 			print("LABEL_GOTO");
+			putchar('\n');
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "let") == 1) {
+			print("DEFINE_VARIABLE ");
+			byte_pointer += 1;
+			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
+			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
+				putchar(argv[1][byte_pointer]);
+				byte_pointer += 1;
+			}
+			putchar('\n');
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "fn") == 1) {
+			print("DEFINE_FUNCTION ");
+			byte_pointer += 1;
+			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
+			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
+				putchar(argv[1][byte_pointer]);
+				byte_pointer += 1;
+			}
 			putchar('\n');
 			continue;
 		}
