@@ -1,5 +1,5 @@
 ## About the project
-Still in development, no documentation shall be made until the first stable release appears.
+No documentation shall be made until the first stable release appears.
 ## Contributing
 ### Code structure
 #### Newlines
