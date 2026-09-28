@@ -186,10 +186,11 @@ int printdv3(int input_number) {
 	return 0;
 }
 
+/*
 char debug[MAX_TOKEN_BYTES];
 int debug_pointer = 0;
 
-int putchardebug(char c) {
+int putcharacterdebug(char c) {
 	debug[debug_pointer] = c;
 	debug_pointer++;
 	return 0;
@@ -223,6 +224,11 @@ int printdebugd(int input_number) {
 	}
 	return 0;
 }
+*/
+
+#define printdebugd printd
+#define putcharacterdebug putcharacter
+#define printdebug print
 
 typedef __INTPTR_TYPE__ st; /* Standard type */
 
@@ -398,7 +404,7 @@ int interpret() {
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Clike - v31 (stable)\n");
+		print("Clike - v32 (stable)\n");
 		print("| Usage: ");
 		print(argv[0]);
 		print(" <code> <run/build>\n");
