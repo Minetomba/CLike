@@ -8,8 +8,8 @@ Stable versions are tested thoroughly before released.
 ## Contributing
 ### Code structure
 #### Newlines
-Newlines shall be appended after each character within the defined list of characters "{};" or at the character closing the name of what to include at a line that starts with #include. Newlines can be added after the closure of an area of code. Exemptions include:
-- Comments (May be added wherever meaning is clearer);
+Newlines shall be appended after each character within the defined list of characters "{};" or at the character closing the name of what to include at a line that starts with #include. Newlines can be added after the closure of an area of code. Exceptions include:
+- Comments (May be added wherever meaning is clearer).
 - "for" loop headers.
 - "else" after a closing bracket shall not have a newline but instead have a space character.
 #### Indentation
