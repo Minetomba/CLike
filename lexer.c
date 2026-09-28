@@ -179,16 +179,16 @@ int main(int argc, char* argv[]) {
 			putchar('\n');
 			continue;
 		}
-		if (eqnext(argv[1], &byte_pointer, ">>") == 1) {
-			print("OPERATOR_SHIFT_RIGHT");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "<<") == 1) {
-			print("OPERATOR_SHIFT_LEFT");
-			putchar('\n');
-			continue;
-		}
+		// if (eqnext(argv[1], &byte_pointer, ">>") == 1) {
+		// 	print("OPERATOR_SHIFT_RIGHT");
+		// 	putchar('\n');
+		// 	continue;
+		// }
+		// if (eqnext(argv[1], &byte_pointer, "<<") == 1) {
+		// 	print("OPERATOR_SHIFT_LEFT");
+		// 	putchar('\n');
+		// 	continue;
+		// }
 		if (argv[1][byte_pointer] == '*') {
 			byte_pointer += 1;
 			print("OPERATOR_DEREFERENCE");

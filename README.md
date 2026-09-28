@@ -1,8 +1,8 @@
 ## About the project
-No documentation shall be made until the first stable release appears.
+This is a compiler for a typeless programming language with syntax combining the best features from Lua, C, and B.
 The first stable release must have these features:
 | DONE - A lexer that transpiles the syntax into usable tokens.
-| PARTIALLY - A parser that transpiles the tokens into an IR.
+| DONE - A parser that transpiles the tokens into an IR.
 | DONE - The interpreter accurately running the IR.
 The second stable release must have these new features:
 | NOT DONE YET - The lexer and parser combined into one file.
@@ -10,6 +10,12 @@ The second stable release must have these new features:
 | NOT DONE YET - A compiler for the IR for x86_64.
 The third stable release must combine everything into one file.
 Any stable release must accurately run and/or compile the syntax.
+## Expressions
+Right-to-left execution, for example, (4 + 3 + 5 + 9) is executed as (4 + (3 + (5 + 9)))
+## Incoming features
+- Functions are not true functions, they're just labels. This will change.
+- Pushing the return address to the stack on a function call, and returning with "return".
+- Array indexing.
 ## Contributing
 ### Code structure
 #### Newlines
