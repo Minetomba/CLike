@@ -1,10 +1,8 @@
 ## About the project
 This is a compiler for a typeless programming language with syntax combining the best features from Lua, C, and B.
-Any stable release must accurately run and/or compile the syntax.
+Any stable release must accurately run and compile the syntax.
 Snapshots may be released before the first stable release or between stable releases.
 Stable versions are tested thoroughly before released.
-## Incoming features
-- Function definitions skipped unless explicitly called;
 ## Contributing
 ### Code structure
 #### Newlines

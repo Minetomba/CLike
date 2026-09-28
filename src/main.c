@@ -269,9 +269,6 @@ int interpret() {
 		} else if (c == '$') { /* Stack base address */
 			stack_pointer += 1;
 			stack[stack_pointer] = (st)&stack[0];
-		} else if (c == '^') { /* Program counter */
-			stack_pointer += 1;
-			stack[stack_pointer] = pc;
 		} else if (c == '`') { /* Call */
 			if (stack[stack_pointer] != 0) {
 				call_stack[call_pointer] = pc + 1;
@@ -280,8 +277,8 @@ int interpret() {
 			}
 			stack_pointer += ~2 + 1;
 		} else if (c == ':') { /* Return */
-			pc = call_stack[call_pointer];
 			call_pointer -= 1;
+			pc = call_stack[call_pointer];
 		} else if (c == '-') { /* Pop from call stack */
 			call_pointer -= 1;
 		}
@@ -292,7 +289,7 @@ int interpret() {
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Clike - v29 (snapshot)\n");
+		print("Clike - v30 (stable)\n");
 		print("| Usage: ");
 		print(argv[0]);
 		print(" <code> <run/build>\n");
@@ -532,7 +529,7 @@ int main(int argc, char* argv[]) {
 		}
 		if (eqnext(tokens, &byte_pointer, "DEFINE_FUNCTION ") == 1) {
 			strcpy(functions[function_pointer], get_to_next_char(tokens, &byte_pointer, '\n'));
-			function_pointer += 1;
+			function_pointer += 2;
 			continue;
 		}
 		byte_pointer += 1;
@@ -544,6 +541,20 @@ int main(int argc, char* argv[]) {
 	int do_add_store = 0;
 	while (tokens[byte_pointer] != '\0') {
 		if (eqnext(tokens, &byte_pointer, "DEFINE_FUNCTION ") == 1) {
+			char target[MAX_STRING_LENGTH];
+			strcpy(target, get_to_next_char(tokens, &byte_pointer, '\n'));
+			int j = 0;
+			stable_zero = 0;
+			while (eqnext(functions[j * 2], &stable_zero, target) == 0 && functions[j * 2][0] != 0) {
+				stable_zero = 0;
+				j++;
+			}
+			printdv2(j * 2 + 1);
+			printv2("| & 1| ? #");
+			putcharacterv2('\n');
+			continue;
+		}
+		if (eqnext(tokens, &byte_pointer, "BLOCK_CLOSE") == 1) {
 			putcharacterv2('#');
 			putcharacterv2('\n');
 			continue;
@@ -557,7 +568,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (do_add_if == 1) {
 				putcharacterv2('_');
-				putcharacterv2('?');
+				putcharacterv2('`');
 				putcharacterv2('\n');
 				do_add_if = 0;
 			}
@@ -580,7 +591,7 @@ int main(int argc, char* argv[]) {
 			if (variables[i][0] == 0) {
 				int j = 0;
 				stable_zero = 0;
-				while (eqnext(functions[j], &stable_zero, target) == 0 && functions[j][0] != 0) {
+				while (eqnext(functions[j * 2], &stable_zero, target) == 0 && functions[j * 2][0] != 0) {
 					stable_zero = 0;
 					j++;
 				}
