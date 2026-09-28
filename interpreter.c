@@ -34,9 +34,17 @@ int main(int argc, char *argv[]) {
 		} else if (c == '+') { /* Add */
 			stack[stack_pointer + ~1 + 1] = stack[stack_pointer + ~1 + 1] + stack[stack_pointer];
 			stack_pointer += ~1 + 1;
-		} else if (c == '~') { /* Nor */
-			stack[stack_pointer + ~1 + 1] = ~(stack[stack_pointer + ~1 + 1] | stack[stack_pointer]);
+		} else if (c == '-') { /* Subtract */
+			stack[stack_pointer + ~1 + 1] = stack[stack_pointer + ~1 + 1] - stack[stack_pointer];
 			stack_pointer += ~1 + 1;
+		} else if (c == '/') { /* Or */
+			stack[stack_pointer + ~1 + 1] = stack[stack_pointer + ~1 + 1] | stack[stack_pointer];
+			stack_pointer += ~1 + 1;
+		} else if (c == ';') { /* And */
+			stack[stack_pointer + ~1 + 1] = stack[stack_pointer + ~1 + 1] & stack[stack_pointer];
+			stack_pointer += ~1 + 1;
+		} else if (c == '~') { /* Not */
+			stack[stack_pointer] = ~stack[stack_pointer];
 		} else if (c == '<') { /* Less than */
 			if (stack[stack_pointer + ~1 + 1] < stack[stack_pointer]) {
 				stack[stack_pointer + ~1 + 1] = 1;
@@ -61,6 +69,11 @@ int main(int argc, char *argv[]) {
 		} else if (c == '?') { /* Branch */
 			if (stack[stack_pointer] != 0) {
 				pc = stack[stack_pointer + ~1 + 1] + ~1 + 1;
+			}
+			stack_pointer += ~2 + 1;
+		} else if (c == '_') { /* Reverse Branch */ 
+			if (stack[stack_pointer] + ~1 + 1 != 0) {
+				pc = stack[stack_pointer] + ~1 + 1;
 			}
 			stack_pointer += ~2 + 1;
 		} else if (c == '&') { /* Dereference label ID */

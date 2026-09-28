@@ -48,7 +48,7 @@ int length(char buffer[]) { /* returns the amount of items in a string before a 
 
 int eqnext(char string[], int* start_index, char compare[]) { /* returns 1 if equal, returns 0 if not */
 	int current_index = 0;
-	while (string[current_index + *start_index] != '\0' && compare[current_index] != '\0') {
+	while (compare[current_index] != '\0') {
 		if (string[current_index + *start_index] != compare[current_index]) {
 			return 0;
 		}
@@ -62,7 +62,7 @@ char* get_to_next_char(char string[], int* start_index, char end) { /* jump to t
 	static char temp_string[MAX_STRING_LENGTH];
 	int string_pointer = 0;
 	temp_string[0] = '\0';
-	while (string[*start_index + string_pointer] != end) {
+	while (string[*start_index + string_pointer] != end && string[*start_index + string_pointer] != '\0') {
 		temp_string[string_pointer] = string[*start_index + string_pointer];
 		temp_string[string_pointer + 1] = '\0';
 		string_pointer += 1;
@@ -115,6 +115,7 @@ int main(int argc, char* argv[]) {
 		byte_pointer += 1;
 	}
 	byte_pointer = 0;
+	char do_add[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	int do_add_assign = 0;
 	while (argv[1][byte_pointer] != '\0') {
 		if (eqnext(argv[1], &byte_pointer, "DEFINE_FUNCTION ") == 1) {
@@ -122,10 +123,17 @@ int main(int argc, char* argv[]) {
 			putchar('\n');
 			continue;
 		}
-		if (do_add_assign == 1 && eqnext(argv[1], &byte_pointer, "LINE_END")) {
-			do_add_assign = 0;
-			putchar('`');
-			putchar('\n');
+		if (eqnext(argv[1], &byte_pointer, "LINE_END")) { // Flush expression
+			while (do_add[0] != '\0') {
+				putchar(do_add[length(do_add) - 1]);
+				putchar('\n');
+				do_add[length(do_add) - 1] = '\0';
+			}
+			if (do_add_assign == 1) {
+				putchar('`');
+				putchar('\n');
+				do_add_assign = 0;
+			}
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "IDENTIFIER ") == 1) {
@@ -139,12 +147,13 @@ int main(int argc, char* argv[]) {
 			}
 			if (variables[i][0] == 0) {
 				int j = 0;
+				stable_zero = 0;
 				while (eqnext(functions[j], &stable_zero, target) == 0 && functions[j][0] != 0) {
 					stable_zero = 0;
 					j++;
 				}
 				printd(j);
-				print("| 1| &");
+				print("| 1| & _");
 				putchar('\n');
 			} else {
 				print("$ ");
@@ -158,12 +167,51 @@ int main(int argc, char* argv[]) {
 			print("|\n");
 			continue;
 		}
+		if (eqnext(argv[1], &byte_pointer, "CHARACTER ") == 1) {
+			print(get_to_next_char(argv[1], &byte_pointer, '\n'));
+			print("|\n");
+			continue;
+		}
 		if (eqnext(argv[1], &byte_pointer, "OPERATOR_DEREFERENCE") == 1) {
 			putchar('@');
 			putchar('\n');
+			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "OPERATOR_ASSIGN") == 1) {
 			do_add_assign = 1;
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "OPERATOR_ADD") == 1) {
+			do_add[length(do_add)] = '+';
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "OPERATOR_SUBTRACT") == 1) {
+			do_add[length(do_add)] = '-';
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "OPERATOR_BITWISE_OR") == 1) {
+			do_add[length(do_add)] = '/';
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "OPERATOR_BITWISE_AND") == 1) {
+			do_add[length(do_add)] = ';';
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "OPERATOR_BITWISE_NOT") == 1) {
+			do_add[length(do_add)] = '~';
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "CONDITION_GREATER_THAN") == 1) {
+			do_add[length(do_add)] = '>';
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "CONDITION_LESS_THAN") == 1) {
+			do_add[length(do_add)] = '<';
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "CONDITION_EQUAL") == 1) {
+			do_add[length(do_add)] = '=';
+			continue;
 		}
 		byte_pointer += 1;
 	}

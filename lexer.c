@@ -99,20 +99,20 @@ int main(int argc, char* argv[]) {
 			putchar('\n');
 			continue;
 		}
-		if (argv[1][byte_pointer] == '"') {
-			byte_pointer += 1;
-			print("STRING ");
-			print(get_to_next_char(argv[1], &byte_pointer, '"'));
-			putchar('\n');
-			continue;
-		}
-		if (argv[1][byte_pointer] == 39) {
-			byte_pointer += 1;
-			print("CHARACTER ");
-			print(get_to_next_char(argv[1], &byte_pointer, 39));
-			putchar('\n');
-			continue;
-		}
+		// if (argv[1][byte_pointer] == '"') {
+		// 	byte_pointer += 1;
+		// 	print("STRING ");
+		// 	print(get_to_next_char(argv[1], &byte_pointer, '"'));
+		// 	putchar('\n');
+		// 	continue;
+		// }
+		// if (argv[1][byte_pointer] == 39) {
+		// 	byte_pointer += 1;
+		// 	print("CHARACTER ");
+		// 	print(get_to_next_char(argv[1], &byte_pointer, 39));
+		// 	putchar('\n');
+		// 	continue;
+		// }
 		if (eqnext(argv[1], &byte_pointer, "/*") == 1) {
 			get_to_next_string(argv[1], &byte_pointer, "*/");
 			continue;
@@ -170,41 +170,12 @@ int main(int argc, char* argv[]) {
 		}
 		if (argv[1][byte_pointer] == ',') {
 			byte_pointer += 1;
-			print("ARGUMENT_SEPARATOR");
+			print("COMMA");
 			putchar('\n');
 			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "0x") == 1) {
-			print("HEXADECIMAL");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "0b") == 1) {
-			print("BINARY");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "0") == 1) {
-			print("OCTAL");
-			putchar('\n');
 		}
 		if (eqnext(argv[1], &byte_pointer, "==") == 1) {
 			print("CONDITION_EQUAL");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "<=") == 1) {
-			print("CONDITION_EQUAL_OR_LESS");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, ">=") == 1) {
-			print("CONDITION_EQUAL_OR_MORE");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "!=") == 1) {
-			print("CONDITION_NOT_EQUAL");
 			putchar('\n');
 			continue;
 		}
@@ -215,26 +186,6 @@ int main(int argc, char* argv[]) {
 		}
 		if (eqnext(argv[1], &byte_pointer, "<<") == 1) {
 			print("OPERATOR_SHIFT_LEFT");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "++") == 1) {
-			print("OPERATOR_INCREMENT");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "--") == 1) {
-			print("OPERATOR_DECREMENT");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "+=") == 1) {
-			print("OPERATOR_ADD_TO");
-			putchar('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "-=") == 1) {
-			print("OPERATOR_SUBTRACT_FROM");
 			putchar('\n');
 			continue;
 		}
@@ -274,15 +225,21 @@ int main(int argc, char* argv[]) {
 			putchar('\n');
 			continue;
 		}
-		if (argv[1][byte_pointer] == '^') {
-			byte_pointer += 1;
-			print("OPERATOR_BITWISE_XOR");
-			putchar('\n');
-			continue;
-		}
 		if (argv[1][byte_pointer] == '~') {
 			byte_pointer += 1;
 			print("OPERATOR_BITWISE_NOT");
+			putchar('\n');
+			continue;
+		}
+		if (argv[1][byte_pointer] == '>') {
+			byte_pointer += 1;
+			print("CONDITION_GREATER_THAN");
+			putchar('\n');
+			continue;
+		}
+		if (argv[1][byte_pointer] == '<') {
+			byte_pointer += 1;
+			print("CONDITION_LESS_THAN");
 			putchar('\n');
 			continue;
 		}
