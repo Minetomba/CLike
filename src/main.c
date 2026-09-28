@@ -188,9 +188,11 @@ int printdv3(int input_number) {
 typedef __INTPTR_TYPE__ st; /* Standard type */
 
 int interpret() {
-	st stack[4096];
+	st stack[MAX_VARIABLES];
 	st stack_pointer = 0;
-	st labels[4096];
+	st call_stack[MAX_FUNCTIONS];
+	st call_pointer = 0;
+	st labels[MAX_FUNCTIONS];
 	st label_pointer = 0;
 	st pc = 0;
 	st last_construct = 0;
@@ -270,6 +272,18 @@ int interpret() {
 		} else if (c == '^') { /* Program counter */
 			stack_pointer += 1;
 			stack[stack_pointer] = pc;
+		} else if (c == '`') { /* Call */
+			if (stack[stack_pointer] != 0) {
+				call_stack[call_pointer] = pc + 1;
+				call_pointer += 1;
+				pc = stack[stack_pointer + ~1 + 1] + ~1 + 1;
+			}
+			stack_pointer += ~2 + 1;
+		} else if (c == ':') { /* Return */
+			pc = call_stack[call_pointer];
+			call_pointer -= 1;
+		} else if (c == '-') { /* Pop from call stack */
+			call_pointer -= 1;
 		}
 		pc += 1;
 	}
@@ -278,7 +292,7 @@ int interpret() {
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Clike - v26 (stable)\n");
+		print("Clike - v27 (stable)\n");
 		print("| Usage: ");
 		print(argv[0]);
 		print(" <code> <run/build>\n");
@@ -440,8 +454,13 @@ int main(int argc, char* argv[]) {
 			putcharacterv1('\n');
 			continue;
 		}
-		if (eqnext(argv[1], &byte_pointer, "clear") == 1) {
-			printv1("CLEAR");
+		if (eqnext(argv[1], &byte_pointer, "substack") == 1) {
+			printv1("CLEAR_STACK");
+			putcharacterv1('\n');
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "subcall") == 1) {
+			printv1("CLEAR_CALL");
 			putcharacterv1('\n');
 			continue;
 		}
@@ -559,7 +578,6 @@ int main(int argc, char* argv[]) {
 				i++;
 			}
 			if (variables[i][0] == 0) {
-				printv3("^ 40| +\n");
 				int j = 0;
 				stable_zero = 0;
 				while (eqnext(functions[j], &stable_zero, target) == 0 && functions[j][0] != 0) {
@@ -567,8 +585,7 @@ int main(int argc, char* argv[]) {
 					j++;
 				}
 				printdv3(j);
-				printv3("| & 1| ?");
-				printv3("NUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFER");
+				printv3("| & 1| `");
 				putcharacterv3('\n');
 			} else {
 				printv2("$ ");
@@ -582,11 +599,15 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 		if (eqnext(tokens, &byte_pointer, "RETURN") == 1) {
-			printv2("1| ?\n");
+			printv2(":\n");
 			continue;
 		}
-		if (eqnext(tokens, &byte_pointer, "CLEAR") == 1) {
+		if (eqnext(tokens, &byte_pointer, "CLEAR_STACK") == 1) {
 			printv2(",\n");
+			continue;
+		}
+		if (eqnext(tokens, &byte_pointer, "CLEAR_CALL") == 1) {
+			printv2("-\n");
 			continue;
 		}
 		if (eqnext(tokens, &byte_pointer, "LATEST") == 1) {
