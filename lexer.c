@@ -254,12 +254,29 @@ int main(int argc, char* argv[]) {
 			putchar('\n');
 			continue;
 		}
-		if (eqnext(argv[1], &byte_pointer, "let") == 1) {
+		if (eqnext(argv[1], &byte_pointer, "var") == 1) {
 			print("DEFINE_VARIABLE ");
 			byte_pointer += 1;
 			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
 			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
 				putchar(argv[1][byte_pointer]);
+				byte_pointer += 1;
+			}
+			putchar('\n');
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "arr") == 1) {
+			print("DEFINE_ARRAY ");
+			byte_pointer += 1;
+			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
+			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
+				putchar(argv[1][byte_pointer]);
+				byte_pointer += 1;
+			}
+			putchar('\n');
+			while (!(argv[1][byte_pointer] >= '0' && argv[1][byte_pointer] <= '9')) byte_pointer += 1;
+			while (argv[1][byte_pointer] >= '0' && argv[1][byte_pointer] <= '9') {
+				putchar(argv[1][byte_pointer] - '0');
 				byte_pointer += 1;
 			}
 			putchar('\n');

@@ -106,9 +106,11 @@ int main(int argc, char* argv[]) {
 		if (eqnext(argv[1], &byte_pointer, "DEFINE_VARIABLE ") == 1) {
 			strcpy(variables[variable_pointer], get_to_next_char(argv[1], &byte_pointer, '\n'));
 			variable_pointer += 1;
-			if (eqnext(argv[1], &byte_pointer, "\nARRAY_OPEN") == 1) {
-				variable_pointer += atoi(get_to_next_string(argv[1], &byte_pointer,"\nARRAY_CLOSE\n"));
-			}
+			continue;
+		}
+		if (eqnext(argv[1], &byte_pointer, "DEFINE_ARRAY ") == 1) {
+			strcpy(variables[variable_pointer], get_to_next_char(argv[1], &byte_pointer, '\n'));
+			variable_pointer += atoi(get_to_next_char(argv[1], &byte_pointer, '\n'));
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "DEFINE_FUNCTION ") == 1) {
