@@ -1,15 +1,7 @@
 ## About the project
 This is a compiler for a typeless programming language with syntax combining the best features from Lua, C, and B.
-The first stable release must have these features:
-| DONE - A lexer that transpiles the syntax into usable tokens.
-| DONE - A parser that transpiles the tokens into an IR.
-| DONE - The interpreter accurately running the IR.
-The second stable release must have these new features:
-| NOT DONE YET - The lexer and parser combined into one file.
-| NOT DONE YET - That one file to have a self-compilable copy.
-| NOT DONE YET - A compiler for the IR for x86_64.
-The third stable release must combine everything into one file.
 Any stable release must accurately run and/or compile the syntax.
+Snapshots may be released before the first stable release or between releases.
 ## Expressions
 Right-to-left execution, for example, (4 + 3 + 5 + 9) is executed as (4 + (3 + (5 + 9)))
 ## Incoming features
@@ -25,7 +17,7 @@ Newlines shall be appended after each character within the defined list of chara
 - "else" after a closing bracket shall not have a newline but instead have a space character.
 #### Indentation
 Indentation starts as 0 by default, and on each line N tabs prefix the following code where N is the indentation level.
-Indentation level is incremented by the character '{' and decremented by the character '}'.
+Indentation level is incremented by the occurence of the character '{' and decremented by the the occurence of the character '}'.
 Indentation is only done with tabs.
 #### Spacing
 Spacing is added before and after every operator that may arithmetically or logically modify/output a number/variable/memory slot from an input number/variable/memory slot. Unary operators are exempt and should only have spacing before them but not after the operator. Attributions like "foo.x", "foo[x]" or "foo->x" are exempt and must not have spacing.
