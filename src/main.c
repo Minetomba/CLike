@@ -6,6 +6,7 @@
 #define MAX_VARIABLES 64
 #define MAX_FUNCTIONS 64
 #define MAX_TOKEN_BYTES 16384
+#define MAX_DEBUG_LENGTH 16384
 
 int putcharacter(char character) { /* prints a character */
 	syscall(1, 1, &character, 1);
@@ -185,6 +186,44 @@ int printdv3(int input_number) {
 	return 0;
 }
 
+char debug[MAX_TOKEN_BYTES];
+int debug_pointer = 0;
+
+int putchardebug(char c) {
+	debug[debug_pointer] = c;
+	debug_pointer++;
+	return 0;
+}
+int printdebug(char string[]) {
+	int i = 0;
+	while (string[i] != '\0') {
+		debug[debug_pointer] = string[i];
+		debug_pointer++;
+		i++;
+	}
+	return 0;
+}
+int printdebugd(int input_number) {
+	char number[MAX_STRING_LENGTH];
+	if (input_number == 0) {
+		putchardebug('0');
+		return 0;
+	}
+	if (input_number < 0) {
+		putchardebug('-');
+		input_number = -input_number;
+	}
+	int i = 0;
+	while (input_number > 0) {
+		number[i++] = '0' + input_number % 10;
+		input_number /= 10;
+	}
+	while (i--) {
+		putchardebug(number[i]);
+	}
+	return 0;
+}
+
 typedef __INTPTR_TYPE__ st; /* Standard type */
 
 int interpret() {
@@ -207,89 +246,159 @@ int interpret() {
 	while (to_interpret[pc] != '\0') {
 		st c = to_interpret[pc];
 		if (c == '|') { /* Pushing the constructed number */
+			if (stack_pointer >= MAX_VARIABLES) {
+				goto debug_zone;
+			}
 			stack_pointer += 1;
 			stack[stack_pointer] = last_construct;
 			last_construct = 0;
 		} else if (c >= '0' && c <= '9') { /* Constructing the number */
-			last_construct = last_construct + last_construct + last_construct + last_construct + last_construct + last_construct + last_construct + last_construct + last_construct + last_construct + ((int)c) + -48;
+			last_construct = last_construct * 10 + (int)c + -48;
 		} else if (c == '@') { /* Get */
 			stack[stack_pointer] = *(st*)stack[stack_pointer];
 		} else if (c == '!') { /* Store */
-			*(st*)stack[stack_pointer] = stack[stack_pointer + ~1 + 1];
-			stack_pointer += ~2 + 1;
+			if (stack_pointer <= 1) {
+				goto debug_zone;
+			}
+			*(st*)stack[stack_pointer] = stack[stack_pointer - 1];
+			stack_pointer -= 2;
 		} else if (c == '+') { /* Add */
-			stack[stack_pointer + ~1 + 1] = stack[stack_pointer + ~1 + 1] + stack[stack_pointer];
-			stack_pointer += ~1 + 1;
+			if (stack_pointer <= 0) {
+				goto debug_zone;
+			}
+			stack[stack_pointer - 1] = stack[stack_pointer - 1] + stack[stack_pointer];
+			stack_pointer -= 1;
 		} else if (c == '/') { /* Or */
-			stack[stack_pointer + ~1 + 1] = stack[stack_pointer + ~1 + 1] | stack[stack_pointer];
-			stack_pointer += ~1 + 1;
+			if (stack_pointer <= 0) {
+				goto debug_zone;
+			}
+			stack[stack_pointer - 1] = stack[stack_pointer - 1] | stack[stack_pointer];
+			stack_pointer -= 1;
 		} else if (c == ';') { /* And */
-			stack[stack_pointer + ~1 + 1] = stack[stack_pointer + ~1 + 1] & stack[stack_pointer];
-			stack_pointer += ~1 + 1;
+			if (stack_pointer <= 0) {
+				goto debug_zone;
+			}
+			stack[stack_pointer - 1] = stack[stack_pointer - 1] & stack[stack_pointer];
+			stack_pointer -= 1;
 		} else if (c == '~') { /* Not */
 			stack[stack_pointer] = ~stack[stack_pointer];
 		} else if (c == '<') { /* Less than */
-			if (stack[stack_pointer + ~1 + 1] < stack[stack_pointer]) {
-				stack[stack_pointer + ~1 + 1] = 1;
-			} else {
-				stack[stack_pointer + ~1 + 1] = 0;
+			if (stack_pointer <= 1) {
+				goto debug_zone;
 			}
-			stack_pointer += ~1 + 1;
+			if (stack[stack_pointer - 1] < stack[stack_pointer]) {
+				stack[stack_pointer - 1] = 1;
+			} else {
+				stack[stack_pointer - 1] = 0;
+			}
+			stack_pointer -= 2;
 		} else if (c == ',') {
+			if (stack_pointer <= 0) {
+				goto debug_zone;
+			}
 			stack_pointer -= 1;
 		} else if (c == '>') { /* Greater than */
-			if (stack[stack_pointer + ~1 + 1] > stack[stack_pointer]) {
-				stack[stack_pointer + ~1 + 1] = 1;
-			} else {
-				stack[stack_pointer + ~1 + 1] = 0;
+			if (stack_pointer <= 1) {
+				goto debug_zone;
 			}
-			stack_pointer += ~1 + 1;
+			if (stack[stack_pointer - 1] > stack[stack_pointer]) {
+				stack[stack_pointer - 1] = 1;
+			} else {
+				stack[stack_pointer - 1] = 0;
+			}
+			stack_pointer -= 2;
 		} else if (c == '=') { /* Is equal to */
-			if (stack[stack_pointer + ~1 + 1] == stack[stack_pointer]) {
-				stack[stack_pointer + ~1 + 1] = 1;
+			if (stack_pointer <= 1) {
+				goto debug_zone;
+			}
+			if (stack[stack_pointer - 1] == stack[stack_pointer]) {
+				stack[stack_pointer - 1] = 1;
 			} else {
-				stack[stack_pointer + ~1 + 1] = 0;
+				stack[stack_pointer - 1] = 0;
 			}
-			stack_pointer += ~1 + 1;
+			stack_pointer -= 2;
 		} else if (c == '?') { /* Branch */
-			if (stack[stack_pointer] != 0) {
-				pc = stack[stack_pointer + ~1 + 1] + ~1 + 1;
+			if (stack_pointer <= 1) {
+				goto debug_zone;
 			}
-			stack_pointer += ~2 + 1;
+			if (stack[stack_pointer] != 0) {
+				pc = stack[stack_pointer - 1] - 1;
+			}
+			stack_pointer -= 2;
 		} else if (c == '_') { /* Swap */
+			if (stack_pointer <= 0) {
+				goto debug_zone;
+			}
 			st temp1 = stack[stack_pointer];
-			st temp2 = stack[stack_pointer + ~1 + 1];
+			st temp2 = stack[stack_pointer - 1];
 			stack[stack_pointer] = temp2;
-			stack[stack_pointer + ~1 + 1] = temp1;
+			stack[stack_pointer - 1] = temp1;
 		} else if (c == '%') { /* Duplicate */
+			if (stack_pointer >= MAX_VARIABLES) {
+				goto debug_zone;
+			}
 			stack[stack_pointer + 1] = stack[stack_pointer];
 			stack_pointer++;
 		} else if (c == '&') { /* Dereference label ID */
 			stack[stack_pointer] = labels[stack[stack_pointer]];
 		} else if (c == '$') { /* Stack base address */
+			if (stack_pointer >= MAX_VARIABLES) {
+				goto debug_zone;
+			}
 			stack_pointer += 1;
 			stack[stack_pointer] = (st)&stack[0];
 		} else if (c == '`') { /* Call */
+			if (call_pointer >= MAX_FUNCTIONS) {
+				goto debug_zone;
+			}
+			if (stack_pointer <= 1) {
+				goto debug_zone;
+			}
 			if (stack[stack_pointer] != 0) {
 				call_stack[call_pointer] = pc + 1;
 				call_pointer += 1;
-				pc = stack[stack_pointer + ~1 + 1] + ~1 + 1;
+				pc = stack[stack_pointer - 1] - 1;
 			}
-			stack_pointer += ~2 + 1;
+			stack_pointer -= 2;
 		} else if (c == ':') { /* Return */
+			if (call_pointer <= 0) {
+				goto debug_zone;
+			}
 			call_pointer -= 1;
 			pc = call_stack[call_pointer];
 		} else if (c == '-') { /* Pop from call stack */
+			if (call_pointer <= 0) {
+				goto debug_zone;
+			}
 			call_pointer -= 1;
 		}
 		pc += 1;
 	}
-	return 0;
+	goto skip_debug_zone;
+	debug_zone:
+		printdebug("[DEBUG] Current token: ");
+		printdebugd(to_interpret[pc]);
+		printdebug("\n");
+		printdebug("[DEBUG] Program counter value: ");
+		printdebugd(pc);
+		printdebug("\n");
+		printdebug("[DEBUG] Call stack pointer value: ");
+		printdebugd(call_pointer);
+		printdebug("\n");
+		printdebug("[DEBUG] Stack pointer value: ");
+		printdebugd(stack_pointer);
+		printdebug("\n");
+		printdebug("[DEBUG] Last construct value: ");
+		printdebugd(last_construct);
+		printdebug("\n");
+		return 1;
+	skip_debug_zone:
+		return 0;
 }
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Clike - v30 (stable)\n");
+		print("Clike - v31 (stable)\n");
 		print("| Usage: ");
 		print(argv[0]);
 		print(" <code> <run/build>\n");

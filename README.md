@@ -12,7 +12,7 @@ Newlines shall be appended after each character within the defined list of chara
 - "else" after a closing bracket shall not have a newline but instead have a space character.
 #### Indentation
 Indentation starts as 0 by default, and on each line N tabs prefix the following code where N is the indentation level.
-Indentation level is incremented by the occurence of the character '{' and decremented by the the occurence of the character '}'.
+Indentation level is incremented by the occurrence of the character '{' and decremented by the occurrence of the character '}'.
 Indentation is only done with tabs.
 #### Spacing
 Spacing is added before and after every operator that may arithmetically or logically modify/output a number/variable/memory slot from an input number/variable/memory slot. Unary operators are exempt and should only have spacing before them but not after the operator. Attributions like "foo.x", "foo[x]" or "foo->x" are exempt and must not have spacing.
@@ -20,7 +20,7 @@ Spacing is added before and after every operator that may arithmetically or logi
 All includes are at the top, right below the license/copyright message.
 #### Comments
 Comments are added where the code doesn't explain what it does. Comments are exempt from all newline/indentation rules and shall be added at a position wherever clearer.
-Comments are used at the beggining of a code block to name that area.
+Comments are used at the begginning of a code block to name that area.
 ### Building
 At the root of this repository:
 ```bash
