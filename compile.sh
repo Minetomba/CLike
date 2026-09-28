@@ -1,2 +1,2 @@
 #!/bin/bash
-gcc src/main.c -o main
+gcc -g -fsanitize=address src/main.c -o main
