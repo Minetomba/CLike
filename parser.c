@@ -1,5 +1,6 @@
 #include <string.h> /* for the strcpy() function */
 #include <unistd.h> /* for the syscall() function */
+#include <stdlib.h> /* for the atoi() function */
 
 #define MAX_STRING_LENGTH 4096 /* configurable number specifying the total maximum amount of allowed characters in a single string */
 #define MAX_VARIABLES 64
@@ -105,6 +106,9 @@ int main(int argc, char* argv[]) {
 		if (eqnext(argv[1], &byte_pointer, "DEFINE_VARIABLE ") == 1) {
 			strcpy(variables[variable_pointer], get_to_next_char(argv[1], &byte_pointer, '\n'));
 			variable_pointer += 1;
+			if (eqnext(argv[1], &byte_pointer, "\nARRAY_OPEN") == 1) {
+				variable_pointer += atoi(get_to_next_string(argv[1], &byte_pointer,"\nARRAY_CLOSE\n"));
+			}
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "DEFINE_FUNCTION ") == 1) {
@@ -163,11 +167,6 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "NUMBER ") == 1) {
-			print(get_to_next_char(argv[1], &byte_pointer, '\n'));
-			print("|\n");
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "CHARACTER ") == 1) {
 			print(get_to_next_char(argv[1], &byte_pointer, '\n'));
 			print("|\n");
 			continue;
