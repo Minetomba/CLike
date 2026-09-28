@@ -346,7 +346,9 @@ int interpret() {
 			stack[stack_pointer + 1] = stack[stack_pointer];
 			stack_pointer++;
 		} else if (c == '&') { /* Dereference label ID */
-			stack[stack_pointer] = labels[stack[stack_pointer]];
+			stack[stack_pointer + 1] = labels[last_construct];
+			stack_pointer += 1;
+			last_construct = 0;
 		} else if (c == '$') { /* Stack base address */
 			if (stack_pointer >= MAX_VARIABLES) {
 				goto debug_zone;
@@ -383,7 +385,7 @@ int interpret() {
 	goto skip_debug_zone;
 	debug_zone:
 		printdebug("[DEBUG] Current token: ");
-		printdebugd(to_interpret[pc]);
+		putcharacterdebug(to_interpret[pc]);
 		printdebug("\n");
 		printdebug("[DEBUG] Program counter value: ");
 		printdebugd(pc);
@@ -402,36 +404,128 @@ int interpret() {
 		return 0;
 }
 
+int compilex8664() {
+	print("section .bss\ncall_stack: resq ");
+	printd(MAX_FUNCTIONS);
+	print("\nsection .text\nglobal _start\n_start:\nmov r13, rsp\nxor r15, r15\n");
+	st labels[MAX_FUNCTIONS];
+	st label_pointer = 0;
+	st pc = 0;
+	st last_construct = 0;
+	st unique = 0;
+	while (to_interpret[pc] != '\0') {
+		if (to_interpret[pc] == '#') {
+			labels[label_pointer] = pc + 1;
+			label_pointer += 1;
+		}
+		pc += 1;
+	}
+	label_pointer = 0;
+	pc = 0;
+	while (to_interpret[pc] != '\0') {
+		st c = to_interpret[pc];
+		if (c == '|') { /* Pushing the constructed number */
+			print("mov rax, ");
+			printd(last_construct);
+			print("\npush rax\n");
+			last_construct = 0;
+		} else if (c >= '0' && c <= '9') { /* Constructing the number */
+			last_construct = last_construct * 10 + (int)c + -48;
+		} else if (c == '@') { /* Get */
+			print("pop rax\nmov rax, [rax]\npush rax\n");
+		} else if (c == '!') { /* Store */
+			print("pop rax\npop rdi\nmov [rax], rdi\n");
+		} else if (c == '+') { /* Add */
+			print("pop rax\npop rdi\nadd rdi, rax\npush rdi\n");
+		} else if (c == '/') { /* Or */
+			print("pop rax\npop rdi\nor rdi, rax\npush rdi\n");
+		} else if (c == ';') { /* And */
+			print("pop rax\npop rdi\nand rdi, rax\npush rdi\n");
+		} else if (c == '~') { /* Not */
+			print("pop rax\nnot rax\npush rax\n");
+		} else if (c == '<') { /* Less than */
+			print("pop rax\npop rdi\ncmp rdi, rax\nsetl al\nmovzx eax, al\npush rax\n");
+		} else if (c == ',') {
+			print("pop rax\n");
+		} else if (c == '>') { /* Greater than */
+			print("pop rax\npop rdi\ncmp rdi, rax\nsetg al\nmovzx eax, al\npush rax\n");
+		} else if (c == '=') { /* Is equal to */
+			print("pop rax\npop rdi\ncmp rdi, rax\nsete al\nmovzx eax, al\npush rax\n");
+		} else if (c == '?') { /* Branch */
+			int skip = unique;
+			unique += 1;
+			print("pop rdi\npop r14\ntest rdi, rdi\njz clabel_skip");
+			printd(skip);
+			print("end\njmp r14\nclabel_skip");
+			printd(skip);
+			print("end:\n");
+		} else if (c == '_') { /* Swap */
+			print("pop rax\npop rdi\npush rax\npush rdi\n");
+		} else if (c == '%') { /* Duplicate */
+			print("pop rax\npush rax\npush rax\n");
+		} else if (c == '&') { /* Dereference label ID */
+			print("lea rax, [rel clabel");
+			printd(labels[last_construct]);
+			print("end]\npush rax\n");
+			last_construct = 0;
+		} else if (c == '#') {
+			print("global clabel");
+			printd(labels[label_pointer]);
+			print("end\nclabel");
+			printd(labels[label_pointer]);
+			print("end:\n");
+			label_pointer += 1;
+		} else if (c == '$') { /* Stack base address */
+			print("push r13\n");
+		} else if (c == '`') { /* Call */
+			int ret = unique;
+			unique += 1;
+			int skip = unique;
+			unique += 1;
+			print("pop rax\npop rdi\ncmp rax, 0\nje clabel_skip");
+			printd(skip);
+			print("end\nlea rbx, [rel clabel_ret");
+			printd(ret);
+			print("end]\nmov [call_stack + r15*8], rbx\ninc r15\njmp rdi\nclabel_ret");
+			printd(ret);
+			print("end:\nclabel_skip");
+			printd(skip);
+			print("end:\n");
+		} else if (c == ':') { /* Return */
+			print("dec r15\njmp qword [call_stack + r15*8]\n");
+		} else if (c == '-') { /* Pop from call stack */
+			print("dec r15\n");
+		}
+		pc += 1;
+	}
+	return 0;
+}
+
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Clike - v32 (stable)\n");
+		print("Clike - v33 (stable)\n");
 		print("| Usage: ");
 		print(argv[0]);
-		print(" <code> <run/build>\n");
+		print(" <code> <run/build-x86_64>\n");
 		return 1;
 	}
 	int byte_pointer = 0;
 	while (argv[1][byte_pointer] != '\0') {
-		if (eqnext(argv[1], &byte_pointer, "continue") == 1) {
-			printv1("LOOP_CONTINUE");
-			putcharacterv1('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "break") == 1) {
-			printv1("LOOP_BREAK");
-			putcharacterv1('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "while") == 1) {
-			printv1("WHILE_LOOP");
-			putcharacterv1('\n');
-			continue;
-		}
-		if (eqnext(argv[1], &byte_pointer, "return") == 1) {
-			printv1("FUNCTION_RETURN");
-			putcharacterv1('\n');
-			continue;
-		}
+		// if (eqnext(argv[1], &byte_pointer, "continue") == 1) {
+		// 	printv1("LOOP_CONTINUE");
+		// 	putcharacterv1('\n');
+		// 	continue;
+		// }
+		// if (eqnext(argv[1], &byte_pointer, "break") == 1) {
+		// 	printv1("LOOP_BREAK");
+		// 	putcharacterv1('\n');
+		// 	continue;
+		// }
+		// if (eqnext(argv[1], &byte_pointer, "while") == 1) {
+		// 	printv1("WHILE_LOOP");
+		// 	putcharacterv1('\n');
+		// 	continue;
+		// }
 		if (eqnext(argv[1], &byte_pointer, "if") == 1) {
 			printv1("IF_CONDITION");
 			putcharacterv1('\n');
@@ -450,36 +544,36 @@ int main(int argc, char* argv[]) {
 			putcharacterv1('\n');
 			continue;
 		}
-		if (argv[1][byte_pointer] == '[') {
-			byte_pointer += 1;
-			printv1("ARRAY_OPEN");
-			putcharacterv1('\n');
-			continue;
-		}
+		// if (argv[1][byte_pointer] == '[') {
+		// 	byte_pointer += 1;
+		// 	printv1("ARRAY_OPEN");
+		// 	putcharacterv1('\n');
+		// 	continue;
+		// }
 		if (argv[1][byte_pointer] == ']') {
 			byte_pointer += 1;
 			printv1("ARRAY_CLOSE");
 			putcharacterv1('\n');
 			continue;
 		}
-		if (argv[1][byte_pointer] == '{') {
-			byte_pointer += 1;
-			printv1("BLOCK_OPEN");
-			putcharacterv1('\n');
-			continue;
-		}
+		// if (argv[1][byte_pointer] == '{') {
+		// 	byte_pointer += 1;
+		// 	printv1("BLOCK_OPEN");
+		// 	putcharacterv1('\n');
+		// 	continue;
+		// }
 		if (argv[1][byte_pointer] == '}') {
 			byte_pointer += 1;
 			printv1("BLOCK_CLOSE");
 			putcharacterv1('\n');
 			continue;
 		}
-		if (argv[1][byte_pointer] == '(') {
-			byte_pointer += 1;
-			printv1("PARANTHESES_OPEN");
-			putcharacterv1('\n');
-			continue;
-		}
+		// if (argv[1][byte_pointer] == '(') {
+		// 	byte_pointer += 1;
+		// 	printv1("PARANTHESES_OPEN");
+		// 	putcharacterv1('\n');
+		// 	continue;
+		// }
 		if (argv[1][byte_pointer] == ')') {
 			byte_pointer += 1;
 			printv1("PARANTHESES_CLOSE");
@@ -665,7 +759,7 @@ int main(int argc, char* argv[]) {
 				j++;
 			}
 			printdv2(j * 2 + 1);
-			printv2("| & 1| ? #");
+			printv2(" & 1| ? #");
 			putcharacterv2('\n');
 			continue;
 		}
@@ -684,6 +778,7 @@ int main(int argc, char* argv[]) {
 			if (do_add_if == 1) {
 				putcharacterv2('_');
 				putcharacterv2('`');
+				printv2("   ");
 				putcharacterv2('\n');
 				do_add_if = 0;
 			}
@@ -711,7 +806,7 @@ int main(int argc, char* argv[]) {
 					j++;
 				}
 				printdv3(j);
-				printv3("| & 1| `");
+				printv3(" & 1| `");
 				putcharacterv3('\n');
 			} else {
 				printv2("$ ");
@@ -827,6 +922,10 @@ int main(int argc, char* argv[]) {
 	stable_zero = 0;
 	if (eqnext(argv[2], &stable_zero, "run") == 1) {
 		interpret();
+	}
+	stable_zero = 0;
+	if (eqnext(argv[2], &stable_zero, "build-x86_64") == 1) {
+		compilex8664();
 	}
 	return 0;
 }

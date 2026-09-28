@@ -1,8 +1,8 @@
 ## About the project
-This is a compiler for a typeless programming language with syntax combining the best features from Lua, C, and B.
+This is both a compiler and interpreter for a typeless programming language with syntax combining the best features from Lua, Forth, C, and B.
 Any stable release must accurately run and compile the syntax.
 Snapshots may be released before the first stable release or between stable releases.
-Stable versions are tested thoroughly before released.
+Stable versions of the interpreter and compiler are tested using the test.c file before being released.
 ## Contributing
 ### Code structure
 #### Newlines
