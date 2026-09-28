@@ -3,12 +3,8 @@ This is a compiler for a typeless programming language with syntax combining the
 Any stable release must accurately run and/or compile the syntax.
 Snapshots may be released before the first stable release or between stable releases.
 Stable versions are tested thoroughly before released.
-## Expressions
-Right-to-left execution, for example, (4 + 3 + 5 + 9) is executed as (4 + (3 + (5 + 9)))
 ## Incoming features
 - Function definitions skipped unless explicitly called;
-- Function arguments;
-- Array indexing;
 ## Contributing
 ### Code structure
 #### Newlines

@@ -292,7 +292,7 @@ int interpret() {
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Clike - v27 (stable)\n");
+		print("Clike - v28 (stable)\n");
 		print("| Usage: ");
 		print(argv[0]);
 		print(" <code> <run/build>\n");
