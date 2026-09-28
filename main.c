@@ -93,12 +93,12 @@ char* get_to_next_string(char string[], int* start_index, char end[]) { /* jump 
 char tokens[MAX_TOKEN_BYTES];
 int token_pointer = 0;
 
-int putintotokens(char c) {
+int putcharv(char c) {
 	tokens[token_pointer] = c;
 	token_pointer++;
 	return 0;
 }
-int printmultipleintotokens(char string[]) {
+int printv(char string[]) {
 	int i = 0;
 	while (string[i] != '\0') {
 		tokens[token_pointer] = string[i];
@@ -119,28 +119,28 @@ int main(int argc, char* argv[]) {
 	int byte_pointer = 0;
 	while (argv[1][byte_pointer] != '\0') {
 		if (eqnext(argv[1], &byte_pointer, "continue") == 1) {
-			printmultipleintotokens("LOOP_CONTINUE");
-			putintotokens('\n');
+			printv("LOOP_CONTINUE");
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "break") == 1) {
-			printmultipleintotokens("LOOP_BREAK");
-			putintotokens('\n');
+			printv("LOOP_BREAK");
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "while") == 1) {
-			printmultipleintotokens("WHILE_LOOP");
-			putintotokens('\n');
+			printv("WHILE_LOOP");
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "return") == 1) {
-			printmultipleintotokens("FUNCTION_RETURN");
-			putintotokens('\n');
+			printv("FUNCTION_RETURN");
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "if") == 1) {
-			printmultipleintotokens("IF_CONDITION");
-			putintotokens('\n');
+			printv("IF_CONDITION");
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "/*") == 1) {
@@ -148,178 +148,178 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 		if (argv[1][byte_pointer] >= (int)'0' && argv[1][byte_pointer] <= (int)'9') {
-			printmultipleintotokens("NUMBER ");
+			printv("NUMBER ");
 			while (argv[1][byte_pointer] >= (int)'0' && argv[1][byte_pointer] <= (int)'9') {
-				putintotokens(argv[1][byte_pointer]);
+				putcharv(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putintotokens('\n');
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '[') {
 			byte_pointer += 1;
-			printmultipleintotokens("ARRAY_OPEN");
-			putintotokens('\n');
+			printv("ARRAY_OPEN");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == ']') {
 			byte_pointer += 1;
-			printmultipleintotokens("ARRAY_CLOSE");
-			putintotokens('\n');
+			printv("ARRAY_CLOSE");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '{') {
 			byte_pointer += 1;
-			printmultipleintotokens("BLOCK_OPEN");
-			putintotokens('\n');
+			printv("BLOCK_OPEN");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '}') {
 			byte_pointer += 1;
-			printmultipleintotokens("BLOCK_CLOSE");
-			putintotokens('\n');
+			printv("BLOCK_CLOSE");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '(') {
 			byte_pointer += 1;
-			printmultipleintotokens("PARANTHESES_OPEN");
-			putintotokens('\n');
+			printv("PARANTHESES_OPEN");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == ')') {
 			byte_pointer += 1;
-			printmultipleintotokens("PARANTHESES_CLOSE");
-			putintotokens('\n');
+			printv("PARANTHESES_CLOSE");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == ';') {
 			byte_pointer += 1;
-			printmultipleintotokens("LINE_END");
-			putintotokens('\n');
+			printv("LINE_END");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == ',') {
 			byte_pointer += 1;
-			printmultipleintotokens("COMMA");
-			putintotokens('\n');
+			printv("COMMA");
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "==") == 1) {
-			printmultipleintotokens("CONDITION_EQUAL");
-			putintotokens('\n');
+			printv("CONDITION_EQUAL");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '*') {
 			byte_pointer += 1;
-			printmultipleintotokens("OPERATOR_DEREFERENCE");
-			putintotokens('\n');
+			printv("OPERATOR_DEREFERENCE");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '=') {
 			byte_pointer += 1;
-			printmultipleintotokens("OPERATOR_ASSIGN");
-			putintotokens('\n');
+			printv("OPERATOR_ASSIGN");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '+') {
 			byte_pointer += 1;
-			printmultipleintotokens("OPERATOR_ADD");
-			putintotokens('\n');
+			printv("OPERATOR_ADD");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '-') {
 			byte_pointer += 1;
-			printmultipleintotokens("OPERATOR_SUBTRACT");
-			putintotokens('\n');
+			printv("OPERATOR_SUBTRACT");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '&') {
 			byte_pointer += 1;
-			printmultipleintotokens("OPERATOR_BITWISE_AND");
-			putintotokens('\n');
+			printv("OPERATOR_BITWISE_AND");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '|') {
 			byte_pointer += 1;
-			printmultipleintotokens("OPERATOR_BITWISE_OR");
-			putintotokens('\n');
+			printv("OPERATOR_BITWISE_OR");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '~') {
 			byte_pointer += 1;
-			printmultipleintotokens("OPERATOR_BITWISE_NOT");
-			putintotokens('\n');
+			printv("OPERATOR_BITWISE_NOT");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '>') {
 			byte_pointer += 1;
-			printmultipleintotokens("CONDITION_GREATER_THAN");
-			putintotokens('\n');
+			printv("CONDITION_GREATER_THAN");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '<') {
 			byte_pointer += 1;
-			printmultipleintotokens("CONDITION_LESS_THAN");
-			putintotokens('\n');
+			printv("CONDITION_LESS_THAN");
+			putcharv('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == ':') {
 			byte_pointer += 1;
-			printmultipleintotokens("LABEL_DEFINITION");
-			putintotokens('\n');
+			printv("LABEL_DEFINITION");
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "goto") == 1) {
-			printmultipleintotokens("LABEL_GOTO");
-			putintotokens('\n');
+			printv("LABEL_GOTO");
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "var") == 1) {
-			printmultipleintotokens("DEFINE_VARIABLE ");
+			printv("DEFINE_VARIABLE ");
 			byte_pointer += 1;
 			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
 			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
-				putintotokens(argv[1][byte_pointer]);
+				putcharv(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putintotokens('\n');
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "arr") == 1) {
-			printmultipleintotokens("DEFINE_ARRAY ");
+			printv("DEFINE_ARRAY ");
 			byte_pointer += 1;
 			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
 			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
-				putintotokens(argv[1][byte_pointer]);
+				putcharv(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putintotokens('\n');
+			putcharv('\n');
 			while (!(argv[1][byte_pointer] >= '0' && argv[1][byte_pointer] <= '9')) byte_pointer += 1;
 			while (argv[1][byte_pointer] >= '0' && argv[1][byte_pointer] <= '9') {
-				putintotokens(argv[1][byte_pointer] - '0');
+				putcharv(argv[1][byte_pointer] - '0');
 				byte_pointer += 1;
 			}
-			putintotokens('\n');
+			putcharv('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "fn") == 1) {
-			printmultipleintotokens("DEFINE_FUNCTION ");
+			printv("DEFINE_FUNCTION ");
 			byte_pointer += 1;
 			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
 			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
-				putintotokens(argv[1][byte_pointer]);
+				putcharv(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putintotokens('\n');
+			putcharv('\n');
 			continue;
 		}
 		if ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
-			printmultipleintotokens("IDENTIFIER ");
+			printv("IDENTIFIER ");
 			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
-				putintotokens(argv[1][byte_pointer]);
+				putcharv(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putintotokens('\n');
+			putcharv('\n');
 			continue;
 		}
 		byte_pointer += 1;
