@@ -7,7 +7,7 @@
 #define MAX_FUNCTIONS 64
 #define MAX_TOKEN_BYTES 16384
 
-int putcharsys(char character) { /* prints a character */
+int putcharacter(char character) { /* prints a character */
 	syscall(1, 1, &character, 1);
 	return 0;
 }
@@ -15,7 +15,7 @@ int putcharsys(char character) { /* prints a character */
 int print(char string[]) { /* prints a list of characters until the function hits a null terminator */
 	int i = 0;
 	while (string[i] != '\0') {
-		putcharsys(string[i]);
+		putcharacter(string[i]);
 		i += 1;
 	}
 	return 0;
@@ -24,11 +24,11 @@ int print(char string[]) { /* prints a list of characters until the function hit
 int printd(int input_number) {
 	char number[MAX_STRING_LENGTH];
 	if (input_number == 0) {
-		putcharsys('0');
+		putcharacter('0');
 		return 0;
 	}
 	if (input_number < 0) {
-		putcharsys('-');
+		putcharacter('-');
 		input_number = -input_number;
 	}
 	int i = 0;
@@ -37,7 +37,7 @@ int printd(int input_number) {
 		input_number /= 10;
 	}
 	while (i--) {
-		putcharsys(number[i]);
+		putcharacter(number[i]);
 	}
 	return 0;
 }
@@ -94,7 +94,7 @@ char tokens[MAX_TOKEN_BYTES];
 int token_pointer = 0;
 int stable_zero = 0;
 
-int putcharsysv1(char c) {
+int putcharacterv1(char c) {
 	tokens[token_pointer] = c;
 	token_pointer++;
 	return 0;
@@ -112,7 +112,7 @@ int printv1(char string[]) {
 char to_interpret[MAX_TOKEN_BYTES];
 int interpret_pointer = 0;
 
-int putcharsysv2(char c) {
+int putcharacterv2(char c) {
 	to_interpret[interpret_pointer] = c;
 	interpret_pointer++;
 	return 0;
@@ -129,11 +129,11 @@ int printv2(char string[]) {
 int printdv2(int input_number) {
 	char number[MAX_STRING_LENGTH];
 	if (input_number == 0) {
-		putcharsysv2('0');
+		putcharacterv2('0');
 		return 0;
 	}
 	if (input_number < 0) {
-		putcharsysv2('-');
+		putcharacterv2('-');
 		input_number = -input_number;
 	}
 	int i = 0;
@@ -142,7 +142,7 @@ int printdv2(int input_number) {
 		input_number /= 10;
 	}
 	while (i--) {
-		putcharsysv2(number[i]);
+		putcharacterv2(number[i]);
 	}
 	return 0;
 }
@@ -240,37 +240,37 @@ int interpret() {
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Usage: ");
+		print("Clike - 22-snapshot\n");
+		print("Usage:");
 		print(argv[0]);
-		print(" <code> <run/build>");
-		putcharsys('\n');
+		print("<code> <run/build\n");
 		return 1;
 	}
 	int byte_pointer = 0;
 	while (argv[1][byte_pointer] != '\0') {
 		if (eqnext(argv[1], &byte_pointer, "continue") == 1) {
 			printv1("LOOP_CONTINUE");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "break") == 1) {
 			printv1("LOOP_BREAK");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "while") == 1) {
 			printv1("WHILE_LOOP");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "return") == 1) {
 			printv1("FUNCTION_RETURN");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "if") == 1) {
 			printv1("IF_CONDITION");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "/*") == 1) {
@@ -280,127 +280,127 @@ int main(int argc, char* argv[]) {
 		if (argv[1][byte_pointer] >= (int)'0' && argv[1][byte_pointer] <= (int)'9') {
 			printv1("NUMBER ");
 			while (argv[1][byte_pointer] >= (int)'0' && argv[1][byte_pointer] <= (int)'9') {
-				putcharsysv1(argv[1][byte_pointer]);
+				putcharacterv1(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '[') {
 			byte_pointer += 1;
 			printv1("ARRAY_OPEN");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == ']') {
 			byte_pointer += 1;
 			printv1("ARRAY_CLOSE");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '{') {
 			byte_pointer += 1;
 			printv1("BLOCK_OPEN");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '}') {
 			byte_pointer += 1;
 			printv1("BLOCK_CLOSE");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '(') {
 			byte_pointer += 1;
 			printv1("PARANTHESES_OPEN");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == ')') {
 			byte_pointer += 1;
 			printv1("PARANTHESES_CLOSE");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == ';') {
 			byte_pointer += 1;
 			printv1("LINE_END");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == ',') {
 			byte_pointer += 1;
 			printv1("COMMA");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "==") == 1) {
 			printv1("CONDITION_EQUAL");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '*') {
 			byte_pointer += 1;
 			printv1("OPERATOR_DEREFERENCE");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '=') {
 			byte_pointer += 1;
 			printv1("OPERATOR_ASSIGN");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '+') {
 			byte_pointer += 1;
 			printv1("OPERATOR_ADD");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '-') {
 			byte_pointer += 1;
 			printv1("OPERATOR_SUBTRACT");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '&') {
 			byte_pointer += 1;
 			printv1("OPERATOR_BITWISE_AND");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '|') {
 			byte_pointer += 1;
 			printv1("OPERATOR_BITWISE_OR");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '~') {
 			byte_pointer += 1;
 			printv1("OPERATOR_BITWISE_NOT");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '>') {
 			byte_pointer += 1;
 			printv1("CONDITION_GREATER_THAN");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (argv[1][byte_pointer] == '<') {
 			byte_pointer += 1;
 			printv1("CONDITION_LESS_THAN");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "return") == 1) {
 			printv1("RETURN");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "creturn") == 1) {
 			printv1("CLEAR_RETURN");
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "var") == 1) {
@@ -408,10 +408,10 @@ int main(int argc, char* argv[]) {
 			byte_pointer += 1;
 			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
 			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
-				putcharsysv1(argv[1][byte_pointer]);
+				putcharacterv1(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "arr") == 1) {
@@ -419,16 +419,16 @@ int main(int argc, char* argv[]) {
 			byte_pointer += 1;
 			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
 			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
-				putcharsysv1(argv[1][byte_pointer]);
+				putcharacterv1(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			while (!(argv[1][byte_pointer] >= '0' && argv[1][byte_pointer] <= '9')) byte_pointer += 1;
 			while (argv[1][byte_pointer] >= '0' && argv[1][byte_pointer] <= '9') {
-				putcharsysv1(argv[1][byte_pointer] - '0');
+				putcharacterv1(argv[1][byte_pointer] - '0');
 				byte_pointer += 1;
 			}
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if (eqnext(argv[1], &byte_pointer, "fn") == 1) {
@@ -436,19 +436,19 @@ int main(int argc, char* argv[]) {
 			byte_pointer += 1;
 			while (!((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_')) byte_pointer += 1;
 			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
-				putcharsysv1(argv[1][byte_pointer]);
+				putcharacterv1(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		if ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
 			printv1("IDENTIFIER ");
 			while ((argv[1][byte_pointer] >= 97 && argv[1][byte_pointer] <= 122) || (argv[1][byte_pointer] >= 65 && argv[1][byte_pointer] <= 90) || argv[1][byte_pointer] == '_') {
-				putcharsysv1(argv[1][byte_pointer]);
+				putcharacterv1(argv[1][byte_pointer]);
 				byte_pointer += 1;
 			}
-			putcharsysv1('\n');
+			putcharacterv1('\n');
 			continue;
 		}
 		byte_pointer += 1;
@@ -482,25 +482,25 @@ int main(int argc, char* argv[]) {
 	int do_add_if = 0;
 	while (tokens[byte_pointer] != '\0') {
 		if (eqnext(tokens, &byte_pointer, "DEFINE_FUNCTION ") == 1) {
-			putcharsysv2('#');
-			putcharsysv2('\n');
+			putcharacterv2('#');
+			putcharacterv2('\n');
 			continue;
 		}
 		if (eqnext(tokens, &byte_pointer, "LINE_END")) { // Flush expression
 			while (do_add[0] != '\0') {
-				putcharsysv2(do_add[length(do_add) - 1]);
-				putcharsysv2('\n');
+				putcharacterv2(do_add[length(do_add) - 1]);
+				putcharacterv2('\n');
 				do_add[length(do_add) - 1] = '\0';
 			}
 			if (do_add_assign == 1) {
-				putcharsysv2('`');
-				putcharsysv2('\n');
+				putcharacterv2('`');
+				putcharacterv2('\n');
 				do_add_assign = 0;
 			}
 			if (do_add_if == 1) {
-				putcharsysv2('_');
-				putcharsysv2('?');
-				putcharsysv2('\n');
+				putcharacterv2('_');
+				putcharacterv2('?');
+				putcharacterv2('\n');
 				do_add_if = 0;
 			}
 			continue;
@@ -524,7 +524,7 @@ int main(int argc, char* argv[]) {
 				printdv2(j);
 				printv2("| & 1| ?");
 				printv2("NUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFER");
-				putcharsysv2('\n');
+				putcharacterv2('\n');
 			} else {
 				printv2("$ ");
 				printdv2(i * 8 + 2048);
@@ -548,8 +548,8 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 		if (eqnext(tokens, &byte_pointer, "OPERATOR_DEREFERENCE") == 1) {
-			putcharsysv2('@');
-			putcharsysv2('\n');
+			putcharacterv2('@');
+			putcharacterv2('\n');
 			continue;
 		}
 		if (eqnext(tokens, &byte_pointer, "OPERATOR_ASSIGN") == 1) {

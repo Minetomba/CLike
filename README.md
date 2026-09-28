@@ -5,9 +5,9 @@ Snapshots may be released before the first stable release or between stable rele
 ## Expressions
 Right-to-left execution, for example, (4 + 3 + 5 + 9) is executed as (4 + (3 + (5 + 9)))
 ## Incoming features
-- Functions are not true functions, they're just labels. This will change.
-- Pushing the return address to the stack on a function call, and returning with "return".
-- Array indexing.
+- Function definitions skipped unless explicitly called;
+- Function arguments;
+- Array indexing;
 ## Contributing
 ### Code structure
 #### Newlines
