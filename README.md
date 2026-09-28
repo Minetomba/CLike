@@ -1,7 +1,7 @@
 ## About the project
 This is a compiler for a typeless programming language with syntax combining the best features from Lua, C, and B.
 Any stable release must accurately run and/or compile the syntax.
-Snapshots may be released before the first stable release or between releases.
+Snapshots may be released before the first stable release or between stable releases.
 ## Expressions
 Right-to-left execution, for example, (4 + 3 + 5 + 9) is executed as (4 + (3 + (5 + 9)))
 ## Incoming features
