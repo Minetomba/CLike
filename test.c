@@ -1,10 +1,8 @@
-arr a 5
-var b
+arr a 4
 fn main {
 	a = 5;
 	test;
 }
 fn test {
-	b = 3;
-	main;
+	test;
 }

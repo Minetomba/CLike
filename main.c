@@ -379,6 +379,7 @@ int main(int argc, char* argv[]) {
 				i++;
 			}
 			if (variables[i][0] == 0) {
+				print("^ 40| +\n");
 				int j = 0;
 				stable_zero = 0;
 				while (eqnext(functions[j], &stable_zero, target) == 0 && functions[j][0] != 0) {
@@ -387,6 +388,7 @@ int main(int argc, char* argv[]) {
 				}
 				printd(j);
 				print("| 1| & _");
+				print("NUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFERNUMBUFFER");
 				putchar('\n');
 			} else {
 				print("$ ");
