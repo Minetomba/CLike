@@ -240,7 +240,7 @@ int interpret() {
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Clike - 22-snapshot\n");
+		print("Clike - 24-snapshot\n");
 		print("Usage:");
 		print(argv[0]);
 		print("<code> <run/build\n");
