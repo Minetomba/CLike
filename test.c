@@ -1,8 +1,9 @@
-arr a 4
+var a;
+var b;
 fn main {
-	a = 5;
-	test;
+	if a* == b* loop;
 }
-fn test {
-	test;
+fn loop {
+	creturn;
+	loop;
 }

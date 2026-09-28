@@ -1,4 +1,2 @@
 #!/bin/bash
-tcc main.c -o main
-./main "$(cat test.c)"
-rm main
+gcc src/main.c -o main
