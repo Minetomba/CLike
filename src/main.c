@@ -610,7 +610,7 @@ int compilex8664() {
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Clike - v34 (stable)\n");
+		print("Clike - v35 (stable)\n");
 		print("| Usage: ");
 		print(argv[0]);
 		print(" <code> <run/build-x86_64>\n");
