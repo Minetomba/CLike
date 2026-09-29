@@ -186,50 +186,6 @@ int printdv3(int input_number) {
 	return 0;
 }
 
-/*
-char debug[MAX_TOKEN_BYTES];
-int debug_pointer = 0;
-
-int putcharacterdebug(char c) {
-	debug[debug_pointer] = c;
-	debug_pointer++;
-	return 0;
-}
-int printdebug(char string[]) {
-	int i = 0;
-	while (string[i] != '\0') {
-		debug[debug_pointer] = string[i];
-		debug_pointer++;
-		i++;
-	}
-	return 0;
-}
-int printdebugd(int input_number) {
-	char number[MAX_STRING_LENGTH];
-	if (input_number == 0) {
-		putchardebug('0');
-		return 0;
-	}
-	if (input_number < 0) {
-		putchardebug('-');
-		input_number = -input_number;
-	}
-	int i = 0;
-	while (input_number > 0) {
-		number[i++] = '0' + input_number % 10;
-		input_number /= 10;
-	}
-	while (i--) {
-		putchardebug(number[i]);
-	}
-	return 0;
-}
-*/
-
-#define printdebugd printd
-#define putcharacterdebug putcharacter
-#define printdebug print
-
 typedef __INTPTR_TYPE__ st; /* Standard type */
 
 int interpret() {
@@ -241,6 +197,7 @@ int interpret() {
 	st label_pointer = 0;
 	st pc = 0;
 	st last_construct = 0;
+	st werror = 0;
 	while (to_interpret[pc] != '\0') {
 		if (to_interpret[pc] == '#') {
 			labels[label_pointer] = pc + 1;
@@ -253,7 +210,15 @@ int interpret() {
 		st c = to_interpret[pc];
 		if (c == '|') { /* Pushing the constructed number */
 			if (stack_pointer >= MAX_VARIABLES) {
-				goto debug_zone;
+				print("[CRASH] Data stack overflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			stack_pointer += 1;
 			stack[stack_pointer] = last_construct;
@@ -264,25 +229,57 @@ int interpret() {
 			stack[stack_pointer] = *(st*)stack[stack_pointer];
 		} else if (c == '!') { /* Store */
 			if (stack_pointer <= 1) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			*(st*)stack[stack_pointer] = stack[stack_pointer - 1];
 			stack_pointer -= 2;
 		} else if (c == '+') { /* Add */
 			if (stack_pointer <= 0) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			stack[stack_pointer - 1] = stack[stack_pointer - 1] + stack[stack_pointer];
 			stack_pointer -= 1;
 		} else if (c == '/') { /* Or */
 			if (stack_pointer <= 0) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			stack[stack_pointer - 1] = stack[stack_pointer - 1] | stack[stack_pointer];
 			stack_pointer -= 1;
 		} else if (c == ';') { /* And */
 			if (stack_pointer <= 0) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			stack[stack_pointer - 1] = stack[stack_pointer - 1] & stack[stack_pointer];
 			stack_pointer -= 1;
@@ -290,7 +287,15 @@ int interpret() {
 			stack[stack_pointer] = ~stack[stack_pointer];
 		} else if (c == '<') { /* Less than */
 			if (stack_pointer <= 1) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			if (stack[stack_pointer - 1] < stack[stack_pointer]) {
 				stack[stack_pointer - 1] = 1;
@@ -300,12 +305,28 @@ int interpret() {
 			stack_pointer -= 2;
 		} else if (c == ',') {
 			if (stack_pointer <= 0) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			stack_pointer -= 1;
 		} else if (c == '>') { /* Greater than */
 			if (stack_pointer <= 1) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			if (stack[stack_pointer - 1] > stack[stack_pointer]) {
 				stack[stack_pointer - 1] = 1;
@@ -315,7 +336,15 @@ int interpret() {
 			stack_pointer -= 2;
 		} else if (c == '=') { /* Is equal to */
 			if (stack_pointer <= 1) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			if (stack[stack_pointer - 1] == stack[stack_pointer]) {
 				stack[stack_pointer - 1] = 1;
@@ -325,7 +354,15 @@ int interpret() {
 			stack_pointer -= 2;
 		} else if (c == '?') { /* Branch */
 			if (stack_pointer <= 1) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			if (stack[stack_pointer] != 0) {
 				pc = stack[stack_pointer - 1] - 1;
@@ -333,7 +370,15 @@ int interpret() {
 			stack_pointer -= 2;
 		} else if (c == '_') { /* Swap */
 			if (stack_pointer <= 0) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			st temp1 = stack[stack_pointer];
 			st temp2 = stack[stack_pointer - 1];
@@ -341,26 +386,69 @@ int interpret() {
 			stack[stack_pointer - 1] = temp1;
 		} else if (c == '%') { /* Duplicate */
 			if (stack_pointer >= MAX_VARIABLES) {
-				goto debug_zone;
+				print("[CRASH] Data stack overflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			stack[stack_pointer + 1] = stack[stack_pointer];
 			stack_pointer++;
 		} else if (c == '&') { /* Dereference label ID */
+			if (stack_pointer >= MAX_VARIABLES) {
+				print("[CRASH] Data stack overflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
+			}
 			stack[stack_pointer + 1] = labels[last_construct];
 			stack_pointer += 1;
 			last_construct = 0;
 		} else if (c == '$') { /* Stack base address */
 			if (stack_pointer >= MAX_VARIABLES) {
-				goto debug_zone;
+				print("[CRASH] Data stack overflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			stack_pointer += 1;
 			stack[stack_pointer] = (st)&stack[0];
 		} else if (c == '`') { /* Call */
 			if (call_pointer >= MAX_FUNCTIONS) {
-				goto debug_zone;
+				print("[CRASH] Call stack overflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			if (stack_pointer <= 1) {
-				goto debug_zone;
+				print("[CRASH] Data stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			if (stack[stack_pointer] != 0) {
 				call_stack[call_pointer] = pc + 1;
@@ -370,13 +458,29 @@ int interpret() {
 			stack_pointer -= 2;
 		} else if (c == ':') { /* Return */
 			if (call_pointer <= 0) {
-				goto debug_zone;
+				print("[CRASH] Call stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			call_pointer -= 1;
 			pc = call_stack[call_pointer];
 		} else if (c == '-') { /* Pop from call stack */
 			if (call_pointer <= 0) {
-				goto debug_zone;
+				print("[CRASH] Call stack underflow");
+				if (werror == 1) {
+					goto debug_zone;
+				} else if (werror == 0) {
+					continue;
+				} else {
+					print("[FATAL CRASH] Invalid werror value");
+					goto debug_zone;
+				}
 			}
 			call_pointer -= 1;
 		}
@@ -384,21 +488,24 @@ int interpret() {
 	}
 	goto skip_debug_zone;
 	debug_zone:
-		printdebug("[DEBUG] Current token: ");
-		putcharacterdebug(to_interpret[pc]);
-		printdebug("\n");
-		printdebug("[DEBUG] Program counter value: ");
-		printdebugd(pc);
-		printdebug("\n");
-		printdebug("[DEBUG] Call stack pointer value: ");
-		printdebugd(call_pointer);
-		printdebug("\n");
-		printdebug("[DEBUG] Stack pointer value: ");
-		printdebugd(stack_pointer);
-		printdebug("\n");
-		printdebug("[DEBUG] Last construct value: ");
-		printdebugd(last_construct);
-		printdebug("\n");
+		print("[DEBUG] Current token: ");
+		putcharacter(to_interpret[pc]);
+		print("\n");
+		print("[DEBUG] Program counter value: ");
+		printd(pc);
+		print("\n");
+		print("[DEBUG] Call stack pointer value: ");
+		printd(call_pointer);
+		print("\n");
+		print("[DEBUG] Stack pointer value: ");
+		printd(stack_pointer);
+		print("\n");
+		print("[DEBUG] Last construct value: ");
+		printd(last_construct);
+		print("\n");
+		print("[DEBUG] Werror value: ");
+		printd(werror);
+		print("\n");
 		return 1;
 	skip_debug_zone:
 		return 0;
@@ -503,7 +610,7 @@ int compilex8664() {
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
-		print("Clike - v33 (stable)\n");
+		print("Clike - v34 (stable)\n");
 		print("| Usage: ");
 		print(argv[0]);
 		print(" <code> <run/build-x86_64>\n");
